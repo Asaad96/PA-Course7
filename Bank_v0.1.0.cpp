@@ -48,6 +48,26 @@ vector <string> SplitString ( string S1 , string Delim)
 }
 
 
+
+sClient ReadNewClient()
+{
+    sClient Client;
+    
+    cout << "Enter Account Number: ";
+    getline(cin>> ws , Client.AccountNumber);
+    cout << "Enter PinCode: ";
+    getline(cin, Client.PinCode );
+    cout<< "Enter Name: ";
+    getline(cin, Client.Name);
+    cout << "Enter Phone: ";
+    getline(cin, Client.Phone);
+    cout << "Enter Account Balance: ";
+    cin >> Client.AccountBalance;
+
+    return Client;
+}
+
+
 sClient ConverLineToRecord (string line , string Seperator = "#//#")
 {
     sClient Client ;
@@ -96,6 +116,66 @@ vector <sClient> LoadClientDataFromFile (string FileName)
     return vClients; 
 }
 
+string ConvertRecordToLine(sClient  Client , string Seperator = "#//#")
+{
+    string stClientRecord = "";
+
+    stClientRecord += Client.AccountNumber + Seperator;
+    stClientRecord += Client.PinCode + Seperator;
+    stClientRecord += Client.Name + Seperator;
+    stClientRecord += Client.Phone + Seperator ;
+    stClientRecord += to_string(Client.AccountBalance) + Seperator;
+
+    return stClientRecord;
+}
+
+
+void AddDataLineToFile(string FileName, string stDataLine)
+{
+    fstream MyFile;
+    MyFile.open(FileName, ios::out | ios::app);
+
+    if(MyFile.is_open())
+    { MyFile << stDataLine << endl;
+        MyFile.close();
+    }
+}
+
+
+void AddNewClient ()
+{
+    sClient Client;
+    Client = ReadNewClient();
+    AddDataLineToFile(ClientsFileName,ConvertRecordToLine(Client));
+}
+
+
+
+void ClearScreen()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+
+void AddClients()
+{
+    char AddMore = 'Y';
+    do 
+    {
+        ClearScreen();
+        cout << "Adding New Client:\n\n";
+        AddNewClient();
+        cout << "\nClient Added Successfuly, Do You Want to add More clients ? Y/N? \n";
+        cin >> AddMore;
+    } while (toupper(AddMore) == 'Y');
+}
+
+
+
 
 void  PrintClientRecord ( sClient Client)
 {
@@ -134,7 +214,7 @@ void  PrintClientRecord ( sClient Client)
 //     }
 //
 //
-// }
+// }:
 
 
 
@@ -193,7 +273,7 @@ void PreformMenuOption( Menue Choice)
             break;
 
     case Add:
-        cout << "Add Client\n";
+             AddClients();
         break;
 
     case Delete:
