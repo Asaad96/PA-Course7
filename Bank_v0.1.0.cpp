@@ -186,6 +186,8 @@ bool FindClientByAccountNumber (string& AccountNumber, vector <sClient>& vClient
         }
     }
     return false; 
+    cout << "\nClient With Account Number "<< AccountNumber <<" Is Not Found\n";
+
 }
 
 bool MarkClientFileDeleteByAccountNumber (string AccountNumber , vector <sClient>& vClients)
@@ -316,12 +318,28 @@ if(FindClientByAccountNumber(AccountNumber, vClients,  Client))
     }
 
 else {
-            cout << "\nClient With Account Number"<< AccountNumber <<"Is Not Found\n";
+            cout << "\nClient With Account Number "<< AccountNumber <<" Is Not Found\n";
             return false;
         }
 }
 
 
+void ShowFoundClientbyAccountNumber (string AccountNumber , vector<sClient>& vClients)
+{
+    sClient Client;
+
+    if(FindClientByAccountNumber(AccountNumber, vClients,  Client))
+    {
+        PrintClientRecord(Client); 
+        
+    }  
+  
+    else 
+    {
+            cout << "\nClient With Account Number "<< AccountNumber <<" Is Not Found\n";
+    }        
+        
+}
 
 void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDataFromFile(ClientsFileName))
 {
@@ -337,7 +355,7 @@ void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDat
        case Delete:
             {
                 string AccountNumber;
-                cout << "Enter Account Number to delete: ";
+                cout << "Enter Account Number to delete: \n";
                 cin >> AccountNumber;
 
                 DeleteClientByAccountNumber(AccountNumber, vClients);
@@ -347,9 +365,16 @@ void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDat
     case Update:
     break;
 
-    
+   // (string& AccountNumber, vector <sClient>& vClients, sClient& Client)
+
     case Find:
-    break;
+    {   string AccountNumber; 
+        sClient Client ; 
+        cout << "Enter Account Number to Find: \n";
+        cin >> AccountNumber;
+        ShowFoundClientbyAccountNumber(AccountNumber, vClients);
+        break;
+    }
 
 
     case Exit:
