@@ -20,7 +20,7 @@ double AccountBalance;
 bool MarkForDelete = false;
 };
 
-
+//vector <sClient> SaveClientFile ();
 
 
 vector <string> SplitString ( string S1 , string Delim)
@@ -154,11 +154,11 @@ void AddNewClient ()
 
 void ClearScreen()
 {
-#ifdef _WIN32
+  #ifdef _WIN32
     system("cls");
-#else
+  #else
     system("clear");
-#endif
+  #endif
 }
 
 
@@ -217,9 +217,25 @@ void  PrintClientRecord ( sClient Client)
   
 }
 
+sClient ChangeClientRecord(string AccountNumber)
+{
+    sClient Client;
+    Client.AccountNumber = AccountNumber;
 
+    cout << "\n\nEnter PinCode? \n"; 
+    getline(cin >> ws, Client.PinCode );
 
+    cout << "Enter Name? \n";
+    getline(cin , Client.Phone);
 
+    cout << "Enter Phone? \n";
+    getline(cin, Client.Phone);
+
+    cout << "Enter AccountBalance? \n";
+    cin >> Client.AccountBalance;
+
+    return Client;
+}
 
 
 void PrintIntroFace ()
@@ -286,8 +302,6 @@ void ShowCleintsList ()
         cout << endl;
     }
 
-
-
 }
 
 
@@ -341,7 +355,43 @@ void ShowFoundClientbyAccountNumber (string AccountNumber , vector<sClient>& vCl
         
 }
 
-void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDataFromFile(ClientsFileName))
+
+
+bool UpdateClientByAccountNumber(string AccountNumber, vector<sClient> &vClients)
+{
+    sClient Client;
+    char Answer = 'n';
+        if (FindClientByAccountNumber(AccountNumber, vClients,Client))
+    {
+        PrintClientRecord(Client);
+        cout << "\n\nAre you sure you want update this client? y/n? ";
+        cin >> Answer;
+        if (Answer == 'y' || Answer == 'Y')
+            {
+                for (sClient& C : vClients)
+                {
+                    if (C.AccountNumber == AccountNumber)
+                    {
+                        C = ChangeClientRecord(AccountNumber);
+                        break;
+                    }
+                }
+        SaveClientFile(ClientsFileName, vClients);
+        cout << "\n\nClient Updated Successfully.";
+        return true;
+            }
+    }
+        else
+    {
+        cout << "\nClient with Account Number ( " << AccountNumber << " ) is Not Found!\n";
+        return false;
+    }
+  return false;
+}
+
+
+
+void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDataFromFile(ClientsFileName), string AccountNumber = "")
 {
       switch (Choice) {
         case Show:
@@ -354,7 +404,7 @@ void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDat
 
        case Delete:
             {
-                string AccountNumber;
+               // string AccountNumber;
                 cout << "Enter Account Number to delete: \n";
                 cin >> AccountNumber;
 
@@ -363,12 +413,15 @@ void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDat
             }
 
     case Update:
-    break;
-
-   // (string& AccountNumber, vector <sClient>& vClients, sClient& Client)
+            {
+             cout << "Enter Account Number to Update: \n";
+             cin >> AccountNumber;
+             UpdateClientByAccountNumber(AccountNumber, vClients);
+             break;
+            }
 
     case Find:
-    {   string AccountNumber; 
+    {  // string AccountNumber; 
         sClient Client ; 
         cout << "Enter Account Number to Find: \n";
         cin >> AccountNumber;
@@ -413,14 +466,15 @@ Menue start ()
 int main ()
 {
 
- string AccountNumber ;
+ 
  vector <sClient> vClients = LoadClientDataFromFile(ClientsFileName);
 
  Menue Choice ;
    do 
    {
+        string AccountNumber ;
         Choice =  start();
-       PreformMenuOption(Choice, vClients);
+       PreformMenuOption(Choice, vClients, AccountNumber);
 
     } while (Choice != Exit ); 
    
