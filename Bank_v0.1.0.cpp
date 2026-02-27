@@ -8,7 +8,7 @@ using namespace std;
 
 const string ClientsFileName = "/Users/asaadmbaz/Downloads/Cprojects/PA-Course7/Clients.text";
 
-enum Menue  {  Show = 1 , Add = 2  ,  Delete = 3 , Update = 4 , Find = 5 , Exit = 6 };
+enum Menue  {  Show = 1 , Add = 2  ,  Delete = 3 , Update = 4 , Find = 5 , Transactions = 6 , Exit = 7 };
 
 struct sClient
 {
@@ -226,7 +226,7 @@ sClient ChangeClientRecord(string AccountNumber)
     getline(cin >> ws, Client.PinCode );
 
     cout << "Enter Name? \n";
-    getline(cin , Client.Phone);
+    getline(cin , Client.Name);
 
     cout << "Enter Phone? \n";
     getline(cin, Client.Phone);
@@ -241,17 +241,18 @@ sClient ChangeClientRecord(string AccountNumber)
 void PrintIntroFace ()
 {
     cout << "======================================================================" << endl;
-    cout << "                            Main Menue Screen                       \n" << endl  ;
+    cout << "                            Main Menu Screen                       \n" << endl  ;
     cout << "======================================================================" << endl;
     cout << "      [1] Show Client List.     \n";
     cout << "      [2] Add New Client.       \n";
     cout << "      [3] Delete Client.        \n";
     cout << "      [4] Update Client Info.   \n";
     cout << "      [5] Find Client.          \n";
-    cout << "      [6] Exit.                 \n";
+    cout << "      [6] Transactions          \n"; 
+    cout << "      [7] Exit.                 \n";
 
     cout << "======================================================================" << endl;
-    cout << "Choose What do you want to do ? [1 to 6]? \n";
+    cout << "Choose What do you want to do ? [1 to 7]? \n";
 
 }
 
@@ -393,17 +394,25 @@ bool UpdateClientByAccountNumber(string AccountNumber, vector<sClient> &vClients
 
 void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDataFromFile(ClientsFileName), string AccountNumber = "")
 {
-      switch (Choice) {
+      switch (Choice)
+      {
         case Show:
-            ShowCleintsList();
-            break;
-
-    case Add:
-             AddClients();
-        break;
+            {
+                  ClearScreen();
+                  ShowCleintsList();
+                  break;
+            }
+       case Add:
+            { 
+           
+                 ClearScreen();
+                 AddClients();
+                 break;
+            }
 
        case Delete:
             {
+                ClearScreen();
                // string AccountNumber;
                 cout << "Enter Account Number to delete: \n";
                 cin >> AccountNumber;
@@ -414,27 +423,36 @@ void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDat
 
     case Update:
             {
-             cout << "Enter Account Number to Update: \n";
-             cin >> AccountNumber;
-             UpdateClientByAccountNumber(AccountNumber, vClients);
-             break;
-            }
+               ClearScreen();
+               cout << "Enter Account Number to Update: \n";
+               cin >> AccountNumber;
+               UpdateClientByAccountNumber(AccountNumber, vClients);
+               break;
+           }
 
     case Find:
-    {  // string AccountNumber; 
-        sClient Client ; 
-        cout << "Enter Account Number to Find: \n";
-        cin >> AccountNumber;
-        ShowFoundClientbyAccountNumber(AccountNumber, vClients);
-        break;
-    }
+           {   
+               ClearScreen();
+               sClient Client ; 
+               cout << "Enter Account Number to Find: \n";
+               cin >> AccountNumber;
+               ShowFoundClientbyAccountNumber(AccountNumber, vClients);
+               break;
+           }
 
+    case Transactions:
+           {
+              ClearScreen();
+
+
+              break;
+           }
 
     case Exit:
-    break;
-    }
+              break;
+    }    
+   
 }
-
 
 Menue start ()
 {
@@ -445,13 +463,13 @@ Menue start ()
         cin >> Choose ;
 
         while (cin.fail())
-    {
-        cin.clear();
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+          {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-        cout << "Invalid Number, Enter a valid one" << endl;
-        cin >> Choose;
-    }
+            cout << "Invalid Number, Enter a valid one" << endl;
+            cin >> Choose;
+         }
        }
        while(Choose < 1 || Choose > 6 );
     
