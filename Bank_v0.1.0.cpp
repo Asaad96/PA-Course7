@@ -3,12 +3,15 @@
 #include <vector>
 #include <fstream>
 #include <iomanip>
+#include <limits>
 
 using namespace std;
 
 const string ClientsFileName = "/Users/asaadmbaz/Downloads/Cprojects/PA-Course7/Clients.text";
 
 enum Menue  {  Show = 1 , Add = 2  ,  Delete = 3 , Update = 4 , Find = 5 , Transactions = 6 , Exit = 7 };
+
+void startMainMenu();
 
 struct sClient
 {
@@ -20,8 +23,10 @@ double AccountBalance;
 bool MarkForDelete = false;
 };
 
-//vector <sClient> SaveClientFile ();
-
+void EnterDeposiAmount ()
+{
+cout << "Please Enter Deposit Amount. \n"; 
+}
 
 vector <string> SplitString ( string S1 , string Delim)
 {
@@ -175,34 +180,6 @@ void AddClients()
     } while (toupper(AddMore) == 'Y');
 }
 
-bool FindClientByAccountNumber (string& AccountNumber, vector <sClient>& vClients, sClient& Client)
-{
-    for (sClient C : vClients )
-    {
-        if(C.AccountNumber == AccountNumber)
-        {
-        Client = C; 
-        return true;
-        }
-    }
-    return false; 
-    cout << "\nClient With Account Number "<< AccountNumber <<" Is Not Found\n";
-
-}
-
-bool MarkClientFileDeleteByAccountNumber (string AccountNumber , vector <sClient>& vClients)
-{
-    for (sClient& C: vClients )
-    {
-        if(C.AccountNumber == AccountNumber)
-        {
-            C.MarkForDelete = true;
-            return true;
-        }
-    }
-    return false;
-}
-
 
 void  PrintClientRecord ( sClient Client)
 {
@@ -273,9 +250,42 @@ vector <sClient> SaveClientFile(string FileName , vector<sClient> vClients)
                  MyFile  << DataLine << endl;
              }
         }
+       // 
+       //  MyFile.flush();
+       //  MyFile.seekg(0);
         MyFile.close();
     }
     return vClients;
+}
+
+bool FindClientByAccountNumber (string& AccountNumber, vector <sClient>& vClients, sClient& Client)
+{
+    
+    for (sClient C : vClients )
+    {   
+   //     SaveClientFile(ClientsFileName, vClients);
+        if(C.AccountNumber == AccountNumber)
+        {
+        Client = C; 
+        return true;
+        }
+    }
+    return false; 
+    cout << "\nClient With Account Number "<< AccountNumber <<" Is Not Found\n";
+
+}
+
+bool MarkClientFileDeleteByAccountNumber (string AccountNumber , vector <sClient>& vClients)
+{
+    for (sClient& C: vClients )
+    {
+        if(C.AccountNumber == AccountNumber)
+        {
+            C.MarkForDelete = true;
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -305,7 +315,19 @@ void ShowCleintsList ()
 
 }
 
+void ShowTransactionsMenuScreen ()
+{
+    cout << "======================================================================" << endl;
+    cout << "                         Transactions Menu Screen                       \n" << endl  ;
+    cout << "======================================================================" << endl;
+    cout << "      [1] Deposit.     \n";
+    cout << "      [2] Withdraw.       \n";
+    cout << "      [3] Total Balances.        \n";
+    cout << "      [4] Main Menu.   \n";
+    cout << "======================================================================" << endl;
+    cout << "Choose What do you want to do ? [1 to 4]? \n";
 
+}
 
 
 bool DeleteClientByAccountNumber  (string AccountNumber , vector<sClient>& vClients)
@@ -323,7 +345,7 @@ if(FindClientByAccountNumber(AccountNumber, vClients,  Client))
         if (Answer == 'y' || Answer == 'Y' )
         {
              MarkClientFileDeleteByAccountNumber(AccountNumber, vClients); 
-             SaveClientFile(ClientsFileName , vClients);
+             SaveClientFile( ClientsFileName ,vClients);
 
         
         cout << "\nClient Deleted Successfuly.\n";
@@ -378,7 +400,7 @@ bool UpdateClientByAccountNumber(string AccountNumber, vector<sClient> &vClients
                     }
                 }
         SaveClientFile(ClientsFileName, vClients);
-        cout << "\n\nClient Updated Successfully.";
+        cout << "\n\nClient Updated Successfully.\n";
         return true;
             }
     }
@@ -390,9 +412,17 @@ bool UpdateClientByAccountNumber(string AccountNumber, vector<sClient> &vClients
   return false;
 }
 
+void GoToShowMainMenu ()
+{
+    cout << "\n\nPress any key to go back to Main Menue...";
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cin.get(); 
+   // startMainMenu ();
+
+}
 
 
-void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDataFromFile(ClientsFileName), string AccountNumber = "")
+void PreformMenuOption( Menue Choice , vector <sClient>& vClients , string& AccountNumber,  sClient& Client) 
 {
       switch (Choice)
       {
@@ -407,6 +437,7 @@ void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDat
            
                  ClearScreen();
                  AddClients();
+                 GoToShowMainMenu(); 
                  break;
             }
 
@@ -443,15 +474,23 @@ void PreformMenuOption( Menue Choice , vector <sClient> vClients = LoadClientDat
     case Transactions:
            {
               ClearScreen();
-
-
+              ShowTransactionsMenuScreen();
+              FindClientByAccountNumber(AccountNumber, vClients, Client);
+              PrintClientRecord(Client);
+              EnterDeposiAmount();
+            //  GoToShowMainMenu(); 
               break;
            }
 
     case Exit:
               break;
     }    
-   
+
+    if (Choice != Exit)
+    {
+        GoToShowMainMenu();
+    }
+ 
 }
 
 Menue start ()
@@ -471,7 +510,7 @@ Menue start ()
             cin >> Choose;
          }
        }
-       while(Choose < 1 || Choose > 6 );
+       while(Choose < 1 || Choose > 7 );
     
    
 
@@ -479,24 +518,25 @@ Menue start ()
 }
 
 
-
-
-int main ()
+void startMainMenu ()
 {
-
- 
+    
  vector <sClient> vClients = LoadClientDataFromFile(ClientsFileName);
 
  Menue Choice ;
    do 
-   {
+   {    sClient Client;
         string AccountNumber ;
         Choice =  start();
-       PreformMenuOption(Choice, vClients, AccountNumber);
+        PreformMenuOption(Choice, vClients, AccountNumber, Client);
 
     } while (Choice != Exit ); 
    
+}
 
+int main ()
+{
+startMainMenu ();
 return 0; 
 }
 
